@@ -91,34 +91,6 @@ Row event argument class
 	<summary>
 Represents a strongly typed in-memory cache of data.
 </summary>
-</member><member name="T:HR_project.DS_laporan.LapDaftarCutiDataTable">
-	<summary>
-Represents the strongly named DataTable class.
-</summary>
-</member><member name="T:HR_project.DS_laporan.LapAbsenKhususDataTable">
-	<summary>
-Represents the strongly named DataTable class.
-</summary>
-</member><member name="T:HR_project.DS_laporan.LapDaftarCutiRow">
-	<summary>
-Represents strongly named DataRow class.
-</summary>
-</member><member name="T:HR_project.DS_laporan.LapAbsenKhususRow">
-	<summary>
-Represents strongly named DataRow class.
-</summary>
-</member><member name="T:HR_project.DS_laporan.LapDaftarCutiRowChangeEvent">
-	<summary>
-Row event argument class
-</summary>
-</member><member name="T:HR_project.DS_laporan.LapAbsenKhususRowChangeEvent">
-	<summary>
-Row event argument class
-</summary>
-</member><member name="T:HR_project.DS_laporan">
-	<summary>
-Represents a strongly typed in-memory cache of data.
-</summary>
 </member><member name="T:HR_project.DsReportKerja.DataTable1DataTable">
 	<summary>
 Represents the strongly named DataTable class.
@@ -216,6 +188,34 @@ Row event argument class
 Row event argument class
 </summary>
 </member><member name="T:HR_project.DsReportKerja">
+	<summary>
+Represents a strongly typed in-memory cache of data.
+</summary>
+</member><member name="T:HR_project.DS_laporan.LapDaftarCutiDataTable">
+	<summary>
+Represents the strongly named DataTable class.
+</summary>
+</member><member name="T:HR_project.DS_laporan.LapAbsenKhususDataTable">
+	<summary>
+Represents the strongly named DataTable class.
+</summary>
+</member><member name="T:HR_project.DS_laporan.LapDaftarCutiRow">
+	<summary>
+Represents strongly named DataRow class.
+</summary>
+</member><member name="T:HR_project.DS_laporan.LapAbsenKhususRow">
+	<summary>
+Represents strongly named DataRow class.
+</summary>
+</member><member name="T:HR_project.DS_laporan.LapDaftarCutiRowChangeEvent">
+	<summary>
+Row event argument class
+</summary>
+</member><member name="T:HR_project.DS_laporan.LapAbsenKhususRowChangeEvent">
+	<summary>
+Row event argument class
+</summary>
+</member><member name="T:HR_project.DS_laporan">
 	<summary>
 Represents a strongly typed in-memory cache of data.
 </summary>

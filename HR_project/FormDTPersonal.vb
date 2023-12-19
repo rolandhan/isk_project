@@ -229,7 +229,6 @@ Public Class FormDTPersonal
                 clear_command()
                 openDB()
                 With grid_anak
-
                     For baris = 0 To .RowCount - 2
                         sql = "insert into tbl_anak(nik, id_anak, nama, no_ktp, tempat_lahir, tgl_lahir) " & _
                             "values(@nik, @id_anak, @nama, @no_ktp, @tempat_lahir, @tgl_lahir)"
@@ -240,18 +239,18 @@ Public Class FormDTPersonal
                             .Add("@nama", SqlDbType.VarChar).Value = grid_anak.Rows(baris).Cells(2).Value
                             .Add("@no_ktp", SqlDbType.VarChar).Value = grid_anak.Rows(baris).Cells(5).Value
                             .Add("@tempat_lahir", SqlDbType.VarChar).Value = grid_anak.Rows(baris).Cells(3).Value
-                            If grid_anak.Rows(baris).Cells(4).Value = " " Then
+                            If String.IsNullOrWhiteSpace(grid_anak.Rows(baris).Cells(4).Value) OrElse IsDBNull(grid_anak.Rows(baris).Cells(4).Value) Then
                                 .Add("@tgl_lahir", SqlDbType.Date).Value = DBNull.Value
                             Else
-                                .Add("@tgl_lahir", SqlDbType.Date).Value = CDate(grid_anak.Rows(baris).Cells(4).Value)
+                                .Add("@tgl_lahir", SqlDbType.Date).Value = CDate(grid_anak.Rows(baris).Cells(4).Value.ToString)
                             End If
                         End With
                         sqlcmd.ExecuteNonQuery()
-                        Return True
                     Next
                 End With
+                Return True
             Catch ex As Exception
-                MsgBox("gagal dalam penyimpanan data anak " & ex.Message, MsgBoxStyle.Information, "INFO")
+                MsgBox("gagal dalam penyimpanan data tabel anak " & ex.Message, MsgBoxStyle.Information, "INFO")
                 Return False
             Finally
                 Conn.Close()
@@ -375,7 +374,7 @@ Public Class FormDTPersonal
                 .Add("@id_anak", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(1).Value
                 .Add("@nama", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(2).Value
                 .Add("@tempat_lahir", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(3).Value
-                .Add("tgl_lahir", SqlDbType.Date).Value = grid.Rows(baris).Cells(4).Value
+                .Add("tgl_lahir", SqlDbType.Date).Value = CDate(grid.Rows(baris).Cells(4).Value)
                 .Add("no_ktp", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(5).Value
             End With
                 sqlcmd.ExecuteNonQuery()
@@ -398,7 +397,7 @@ Public Class FormDTPersonal
                 .Add("@id_anak", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(1).Value
                 .Add("@nama", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(2).Value
                 .Add("@tempat_lahir", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(3).Value
-                .Add("tgl_lahir", SqlDbType.Date).Value = grid.Rows(baris).Cells(4).Value
+                .Add("tgl_lahir", SqlDbType.Date).Value = CDate(grid.Rows(baris).Cells(4).Value)
                 .Add("no_ktp", SqlDbType.VarChar).Value = grid.Rows(baris).Cells(5).Value
             End With
             sqlcmd.ExecuteNonQuery()
@@ -634,23 +633,31 @@ Public Class FormDTPersonal
                     .Rows(.RowCount - 2).Cells(2).Value = Text_nmanak.Text
                     .Rows(.RowCount - 2).Cells(3).Value = Text_tlahiranak.Text
                     .Rows(.RowCount - 2).Cells(5).Value = Text_ktpanak.Text
-                    .Rows(.RowCount - 2).Cells(4).Value = CDate((Format(CDate(DT_tlahiranak.Text), "yyyy/M/d")))
+                    .Rows(.RowCount - 2).Cells(4).Value = CDate((Format(CDate(DT_tlahiranak.Text), "dd-MM-yyyy")))
                 End With
+                hapus_fieldanak()
             Else
+                Dim row As DataRow
+                Dim tgl As String
+                row = DTab.NewRow
+                ' Add Values to Row here 
+                DTab.Rows.Add(row)
+                grid_anak.DataSource = DTab
+                atur_gridanak("edit")
+                grid_anak.Refresh()
                 With grid_anak
-                    With grid_anak
-                        atur_gridanak("baru")
-                        id_anak = num + 1
-                        .Rows.Add(1)
-                        .Rows(.RowCount - 2).Cells(0).Value = text_nik.Text
-                        .Rows(.RowCount - 2).Cells(1).Value = id_anak
-                        .Rows(.RowCount - 2).Cells(2).Value = Text_nmanak.Text
-                        .Rows(.RowCount - 2).Cells(3).Value = Text_tlahiranak.Text
-                        .Rows(.RowCount - 2).Cells(4).Value = Format(CDate(DT_tlahiranak.Text), "yyyy/M/d")
-                        .Rows(.RowCount - 2).Cells(5).Value = Text_ktpanak.Text
-                    End With
+                    If id_status <> "edit" Then
+                        id_anak = 1
+                    End If
+                    .Rows(.RowCount - 2).Cells(0).Value = text_nik.Text
+                    .Rows(.RowCount - 2).Cells(1).Value = id_anak
+                    .Rows(.RowCount - 2).Cells(2).Value = Text_nmanak.Text
+                    .Rows(.RowCount - 2).Cells(3).Value = Text_tlahiranak.Text
+                    .Rows(.RowCount - 2).Cells(5).Value = Text_ktpanak.Text
+                    .Rows(.RowCount - 2).Cells(4).Value = CDate((Format(CDate(DT_tlahiranak.Text), "dd-MM-yyyy")))
                 End With
             End If
+            hapus_fieldanak()
         Else
             With grid_anak
                 atur_gridanak("baru")
@@ -1109,4 +1116,5 @@ Public Class FormDTPersonal
             Conn.Close()
         End Try
     End Sub
+
 End Class
