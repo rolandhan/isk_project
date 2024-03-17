@@ -31,7 +31,7 @@ Public Class FormDaftarAbsensi
                         "FROM tbl_dataabsen WHERE tbl_dataabsen.tanggal = @tanggal) AS absen " & _
                         "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) as temp " & _
                         "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja .nik AND " & _
-                        "temp.tanggal = tbl_rekapkerja.tanggal order by temp.nik"
+                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE tbl_rekapkerja.status <> 'catatan' order by temp.nik"
                 Case "departemen"
                     sql = "SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY temp.nik ASC) AS No, " & _
                         "temp.nik, temp.nama, temp.departemen , temp.status_karyawan , temp.tanggal, " & _
@@ -44,7 +44,8 @@ Public Class FormDaftarAbsensi
                         "FROM tbl_dataabsen WHERE tbl_dataabsen.tanggal = @tanggal) AS absen " & _
                         "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) as temp " & _
                         "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja .nik AND " & _
-                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE temp.departemen = '" & combo_dept.Text & "' " & _
+                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE WHERE tbl_rekapkerja.status <> 'catatan' AND " & _
+                        "temp.departemen = '" & combo_dept.Text & "' " & _
                         "order by temp.nik"
                 Case "pencarian"
                     sql = "SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY temp.nik ASC) AS No, " & _
@@ -58,7 +59,8 @@ Public Class FormDaftarAbsensi
                         "FROM tbl_dataabsen WHERE tbl_dataabsen.tanggal = @tanggal) AS absen " & _
                         "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) as temp " & _
                         "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja .nik AND " & _
-                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE temp.nama LIKE  '%" & Text_pencarian.Text & "%' OR temp.NIK LIKE '%" & Text_pencarian.Text & "%' " & _
+                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE tbl_rekapkerja.status <> 'catatan' AND " & _
+                        "temp.nama LIKE  '%" & Text_pencarian.Text & "%' OR temp.NIK LIKE '%" & Text_pencarian.Text & "%' " & _
                         "order by temp.nik"
             End Select
             sqlcmd = New SqlCommand(sql, Conn)
