@@ -20,61 +20,65 @@ Public Class FormDaftarAbsensi
             openDB()
             Select Case opt
                 Case String.Empty
-                    sql = "SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY temp.nik ASC) AS No, " & _
-                        "temp.nik, temp.nama, temp.departemen , temp.status_karyawan , temp.tanggal, " & _
-                        "CONVERT(VARCHAR(50), temp.timein, 108) as timein, " & _
-                        "CONVERT(VARCHAR(50), temp.timeout, 108) as timeout, " & _
-                        "(CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN tbl_rekapkerja.status ELSE NULL END) as ket FROM " & _
-                        "(SELECT view_dtpegawai.nik, view_dtpegawai.nama, view_dtpegawai.departemen, " & _
-                        "view_dtpegawai.status_karyawan, @tanggal as tanggal, absen.timein, absen.timeout FROM " & _
-                        "(SELECT tbl_dataabsen.nik, tbl_dataabsen.tanggal, tbl_dataabsen.timein, tbl_dataabsen.timeout " & _
+                    sql = "SELECT  DISTINCT ROW_NUMBER() OVER(ORDER BY nik ASC) AS No, " & _
+                        "nik, nama, departemen, status_karyawan, tanggal, timein, timeout, ket " & _
+                        "FROM (SELECT DISTINCT ROW_NUMBER() OVER(PARTITION BY temp.nik ORDER BY " & _
+                        "CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN 0 ELSE 1 END, temp.nik ASC) AS No, " & _
+                        "temp.nik, temp.nama, temp.departemen, temp.status_karyawan, temp.tanggal, CONVERT(VARCHAR(50), " & _
+                        "temp.timein, 108) AS timein, CONVERT(VARCHAR(50), temp.timeout, 108) AS timeout, " & _
+                        "(CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN tbl_rekapkerja.status ELSE NULL END) AS ket " & _
+                        "FROM (SELECT view_dtpegawai.nik, view_dtpegawai.nama, view_dtpegawai.departemen,  " & _
+                        "view_dtpegawai.status_karyawan, @tanggal AS tanggal, absen.timein, absen.timeout " & _
+                        "FROM (SELECT tbl_dataabsen.nik, tbl_dataabsen.tanggal, tbl_dataabsen.timein, tbl_dataabsen.timeout " & _
                         "FROM tbl_dataabsen WHERE tbl_dataabsen.tanggal = @tanggal) AS absen " & _
-                        "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) as temp " & _
-                        "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja .nik AND " & _
-                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE tbl_rekapkerja.status <> 'catatan' order by temp.nik"
+                        "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) AS temp " & _
+                        "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja.nik AND  temp.tanggal = tbl_rekapkerja.tanggal) AS sub " & _
+                        "WHERE No = 1;"
                 Case "departemen"
-                    sql = "SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY temp.nik ASC) AS No, " & _
-                        "temp.nik, temp.nama, temp.departemen , temp.status_karyawan , temp.tanggal, " & _
-                        "CONVERT(VARCHAR(50), temp.timein, 108) as timein, " & _
-                        "CONVERT(VARCHAR(50), temp.timeout, 108) as timeout, " & _
-                        "(CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN tbl_rekapkerja.status ELSE NULL END) as ket FROM " & _
-                        "(SELECT view_dtpegawai.nik, view_dtpegawai.nama, view_dtpegawai.departemen, " & _
-                        "view_dtpegawai.status_karyawan, @tanggal as tanggal, absen.timein, absen.timeout FROM " & _
-                        "(SELECT tbl_dataabsen.nik, tbl_dataabsen.tanggal, tbl_dataabsen.timein, tbl_dataabsen.timeout " & _
+                    sql = "SELECT  DISTINCT ROW_NUMBER() OVER(ORDER BY nik ASC) AS No, " & _
+                        "nik, nama, departemen, status_karyawan, tanggal, timein, timeout, ket " & _
+                        "FROM (SELECT DISTINCT ROW_NUMBER() OVER(PARTITION BY temp.nik ORDER BY " & _
+                        "CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN 0 ELSE 1 END, temp.nik ASC) AS No, " & _
+                        "temp.nik, temp.nama, temp.departemen, temp.status_karyawan, temp.tanggal, CONVERT(VARCHAR(50), " & _
+                        "temp.timein, 108) AS timein, CONVERT(VARCHAR(50), temp.timeout, 108) AS timeout, " & _
+                        "(CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN tbl_rekapkerja.status ELSE NULL END) AS ket " & _
+                        "FROM (SELECT view_dtpegawai.nik, view_dtpegawai.nama, view_dtpegawai.departemen,  " & _
+                        "view_dtpegawai.status_karyawan, @tanggal AS tanggal, absen.timein, absen.timeout " & _
+                        "FROM (SELECT tbl_dataabsen.nik, tbl_dataabsen.tanggal, tbl_dataabsen.timein, tbl_dataabsen.timeout " & _
                         "FROM tbl_dataabsen WHERE tbl_dataabsen.tanggal = @tanggal) AS absen " & _
-                        "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) as temp " & _
-                        "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja .nik AND " & _
-                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE WHERE tbl_rekapkerja.status <> 'catatan' AND " & _
-                        "temp.departemen = '" & combo_dept.Text & "' " & _
-                        "order by temp.nik"
+                        "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) AS temp " & _
+                        "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja.nik AND  temp.tanggal = tbl_rekapkerja.tanggal " & _
+                        "WHERE temp.departemen = '" & combo_dept.Text & "') AS sub " & _
+                        "WHERE No = 1;"
                 Case "pencarian"
-                    sql = "SELECT DISTINCT ROW_NUMBER() OVER(ORDER BY temp.nik ASC) AS No, " & _
-                        "temp.nik, temp.nama, temp.departemen , temp.status_karyawan , temp.tanggal, " & _
-                        "CONVERT(VARCHAR(50), temp.timein, 108) as timein, " & _
-                        "CONVERT(VARCHAR(50), temp.timeout, 108) as timeout, " & _
-                        "(CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN tbl_rekapkerja.status ELSE NULL END) as ket FROM " & _
-                        "(SELECT view_dtpegawai.nik, view_dtpegawai.nama, view_dtpegawai.departemen, " & _
-                        "view_dtpegawai.status_karyawan, @tanggal as tanggal, absen.timein, absen.timeout FROM " & _
-                        "(SELECT tbl_dataabsen.nik, tbl_dataabsen.tanggal, tbl_dataabsen.timein, tbl_dataabsen.timeout " & _
+                    sql = "SELECT  DISTINCT ROW_NUMBER() OVER(ORDER BY nik ASC) AS No, " & _
+                        "nik, nama, departemen, status_karyawan, tanggal, timein, timeout, ket " & _
+                        "FROM (SELECT DISTINCT ROW_NUMBER() OVER(PARTITION BY temp.nik ORDER BY " & _
+                        "CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN 0 ELSE 1 END, temp.nik ASC) AS No, " & _
+                        "temp.nik, temp.nama, temp.departemen, temp.status_karyawan, temp.tanggal, CONVERT(VARCHAR(50), " & _
+                        "temp.timein, 108) AS timein, CONVERT(VARCHAR(50), temp.timeout, 108) AS timeout, " & _
+                        "(CASE WHEN tbl_rekapkerja.status <> 'catatan' THEN tbl_rekapkerja.status ELSE NULL END) AS ket " & _
+                        "FROM (SELECT view_dtpegawai.nik, view_dtpegawai.nama, view_dtpegawai.departemen,  " & _
+                        "view_dtpegawai.status_karyawan, @tanggal AS tanggal, absen.timein, absen.timeout " & _
+                        "FROM (SELECT tbl_dataabsen.nik, tbl_dataabsen.tanggal, tbl_dataabsen.timein, tbl_dataabsen.timeout " & _
                         "FROM tbl_dataabsen WHERE tbl_dataabsen.tanggal = @tanggal) AS absen " & _
-                        "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) as temp " & _
-                        "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja .nik AND " & _
-                        "temp.tanggal = tbl_rekapkerja.tanggal WHERE tbl_rekapkerja.status <> 'catatan' AND " & _
-                        "temp.nama LIKE  '%" & Text_pencarian.Text & "%' OR temp.NIK LIKE '%" & Text_pencarian.Text & "%' " & _
-                        "order by temp.nik"
+                        "RIGHT OUTER JOIN view_dtpegawai ON absen.nik = view_dtpegawai.nik) AS temp " & _
+                        "LEFT OUTER JOIN tbl_rekapkerja ON temp.nik = tbl_rekapkerja.nik AND  temp.tanggal = tbl_rekapkerja.tanggal " & _
+                        "WHERE temp.nama LIKE  '%" & Text_pencarian.Text & "%' OR temp.NIK LIKE '%" & Text_pencarian.Text & "%' ) AS sub " & _
+                        "WHERE No = 1;"
             End Select
-            sqlcmd = New SqlCommand(sql, Conn)
-            With sqlcmd.Parameters
-                .Add("tanggal", SqlDbType.Date).Value = DTanggal.Text
-            End With
-            sqladapter = New SqlDataAdapter
-            sqladapter.SelectCommand = sqlcmd
-            DTab = New DataTable
-            DTab.Clear()
-            sqladapter.Fill(DTab)
-            grid.DataSource = DTab
-            atur_grid(grid_absen)
-            grid.Refresh()
+                                sqlcmd = New SqlCommand(sql, Conn)
+                                With sqlcmd.Parameters
+                                    .Add("tanggal", SqlDbType.Date).Value = DTanggal.Text
+                                End With
+                                sqladapter = New SqlDataAdapter
+                                sqladapter.SelectCommand = sqlcmd
+                                DTab = New DataTable
+                                DTab.Clear()
+                                sqladapter.Fill(DTab)
+                                grid.DataSource = DTab
+                                atur_grid(grid_absen)
+                                grid.Refresh()
         Catch ex As Exception
             MsgBox("gagal dalam menampilkan data " & ex.Message, "INFO")
         Finally
