@@ -8,9 +8,10 @@ Public Class FormAbsensiKhusus
     Dim tgl_awal, tgl_akhir As Date
     Dim nik As String
 
-    Dim bulan, tahun As String
+    Dim bulan, tahun, NamaManager, KodeLap As String
     Dim rpt As New ReportDocument
     Dim CRtxtjudul, CRtxtNB, CRtxtcatatan As CrystalDecisions.CrystalReports.Engine.TextObject
+
 
 
     Private Sub load_CmbOpt(ByVal combo As ComboBox)
@@ -215,9 +216,15 @@ Public Class FormAbsensiKhusus
     End Sub
 
     Private Sub Button_cetak_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button_cetak.Click
-
         tahun = Year(DT_tglawal.Text)
         bulan = convert_namabulan(DT_tglawal.Text)
+        Try
+            Dim FilePath As String = Application.StartupPath & "\config_report.ini"
+            KodeLap = readini(FilePath, "setting Config KecKerja", "kode_laporan", "")
+            NamaManager = readini(FilePath, "setting Config KecKerja", "manager", "")
+        Catch ex As Exception
+            MsgBox("gagal dalam memuat data Nama Manager dan Kode Laporan", MsgBoxStyle.Information, "INFO")
+        End Try
         Try
             
             If Combo_JLaporan.Text = "Rekap Absen Masa Percobaan" Then
@@ -228,13 +235,15 @@ Public Class FormAbsensiKhusus
                 rpt.SetParameterValue(0, (convert_namabulan(DT_tglawal.Text) & " " & Year(DT_tglawal.Text)))
             ElseIf Combo_JLaporan.Text = "Rekap Absen Kecelakaan Kerja" Then
                 rpt = New LaporanKecKerja
-                            'rpt.Load(Application.StartupPath & "\reports\LaporanKecKerja.rpt")
+                'rpt.Load(Application.StartupPath & "\reports\LaporanKecKerja.rpt")
                 'rpt.SetDatabaseLogon(user:=uid, password:=pass)
                 rpt.SetDataSource(DTab)
                 CRtxtcatatan = CType(rpt.ReportDefinition.ReportObjects.Item("TextCatatan"), 
                     CrystalDecisions.CrystalReports.Engine.TextObject)
                 rpt.SetParameterValue(0, (convert_namabulan(DT_tglawal.Text) & " " & Year(DT_tglawal.Text)))
+                rpt.SetParameterValue(1, NamaManager)
                 CRtxtcatatan.Text = Text_ket.Text
+
             End If
 
             FormLaporan.CrystalReportViewer1.ReportSource = rpt
@@ -273,4 +282,5 @@ Public Class FormAbsensiKhusus
     Private Sub Text_pencarian_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Text_pencarian.TextChanged
         load_grid_karyawan(Grid_karyawan, "Pencarian")
     End Sub
+
 End Class

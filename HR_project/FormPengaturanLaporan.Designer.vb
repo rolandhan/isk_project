@@ -228,7 +228,7 @@ Partial Class FormPengaturanLaporan
         Me.TabLap.Padding = New System.Windows.Forms.Padding(3)
         Me.TabLap.Size = New System.Drawing.Size(1162, 533)
         Me.TabLap.TabIndex = 1
-        Me.TabLap.Text = "Pengaturan Laporan Triwulan"
+        Me.TabLap.Text = "Pengaturan Laporan"
         Me.TabLap.UseVisualStyleBackColor = True
         '
         'BSaveLap

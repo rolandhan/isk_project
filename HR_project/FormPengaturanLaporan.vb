@@ -4,6 +4,7 @@ Imports System.Data.SqlClient
 Imports System.Xml.Serialization
 Imports System.Xml
 Imports System.Security.Permissions
+Imports System.Security.AccessControl
 
 Public Class FormPengaturanLaporan
     Dim Ds As DataSet
@@ -21,6 +22,11 @@ Public Class FormPengaturanLaporan
                 GetDataConfig(Combo_JnsLap.Text, FilePathConfig)
             Case "Laporan Tahunan"
                 GetDataConfig(Combo_JnsLap.Text, FilePathConfig)
+            Case "Laporan Kecelakaan Kerja"
+                ComboStaff.Text = String.Empty
+                ComboStaff.Enabled = False
+                GetDataConfig(Combo_JnsLap.Text, FilePathConfig)
+
         End Select
     End Sub
 
@@ -36,6 +42,7 @@ Public Class FormPengaturanLaporan
             .Add("Laporan Bulanan")
             .Add("Laporan Triwulan")
             .Add("Laporan Tahunan")
+            .Add("Laporan Kecelakaan Kerja")
         End With
     End Sub
 
@@ -224,8 +231,14 @@ Public Class FormPengaturanLaporan
                     writer.WriteLine(name)
                 Next
             End Using
-
             MessageBox.Show("Daftar nama telah disimpan.")
+            Dim fileInfo As New FileInfo(FilePath)
+            Dim fileSecurity As FileSecurity = fileInfo.GetAccessControl()
+            fileSecurity.AddAccessRule(New FileSystemAccessRule("Everyone", FileSystemRights.FullControl, AccessControlType.Allow))
+            fileInfo.SetAccessControl(fileSecurity)
+        Catch ex As UnauthorizedAccessException
+            MessageBox.Show("Izin ditolak. Jalankan aplikasi sebagai Administrator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+
         Catch ex As Exception
             MessageBox.Show("Terjadi kesalahan saat menyimpan file: " & ex.Message)
         End Try
@@ -317,6 +330,9 @@ Public Class FormPengaturanLaporan
                         TextKode.Text = readini(FilePath, "setting config triwulan", "kode_laporan", "")
                         ComboStaff.Text = readini(FilePath, "setting config triwulan", "bag_administrasi", "")
                         ComboManager.Text = readini(FilePath, "setting config triwulan", "manager", "")
+                    Case "Laporan Kecelakaan Kerja"
+                        TextKode.Text = readini(FilePath, "setting Config KecKerja", "kode_laporan", "")
+                        ComboManager.Text = readini(FilePath, "setting Config KecKerja", "manager", "")
                 End Select
             End If
         Catch ex As Exception
@@ -348,6 +364,9 @@ Public Class FormPengaturanLaporan
                         writeini(FilePath, "setting Config tahunan", "kode_laporan", TextKode.Text)
                         writeini(FilePath, "setting Config tahunan", "manager", ComboManager.Text)
                         writeini(FilePath, "setting Config tahunan", "bag_administrasi", ComboStaff.Text)
+                    Case "laporan Kecelakaan Kerja"
+                        writeini(FilePath, "setting Config KecKerja", "kode_laporan", TextKode.Text)
+                        writeini(FilePath, "setting Config KecKerja", "manager", ComboManager.Text)
                 End Select
             Else
                 MsgBox("gagal mendapatkan akses ", MsgBoxStyle.Information, "INFO")
@@ -374,5 +393,9 @@ Public Class FormPengaturanLaporan
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         MuatDaftarnama()
+    End Sub
+
+    Private Sub Combo_nama_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Combo_nama.SelectedIndexChanged
+
     End Sub
 End Class
